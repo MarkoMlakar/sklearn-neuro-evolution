@@ -1,8 +1,7 @@
-from ._template import TemplateEstimator
-from ._template import TemplateClassifier
-from ._template import TemplateTransformer
+from ._neat import NEATClassifier
+from ._neat import NEATRegressor
 
 from ._version import __version__
 
-__all__ = ['TemplateEstimator', 'TemplateClassifier', 'TemplateTransformer',
+__all__ = ['NEATClassifier', 'NEATRegressor',
            '__version__']

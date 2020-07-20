@@ -13,7 +13,7 @@ Estimator
    :toctree: generated/
    :template: class.rst
 
-   TemplateEstimator
+   NEATEstimator
 
 Transformer
 ===========

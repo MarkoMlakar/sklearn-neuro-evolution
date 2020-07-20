@@ -5,7 +5,7 @@ from sklearn.datasets import load_iris
 from sklearn.utils.testing import assert_array_equal
 from sklearn.utils.testing import assert_allclose
 
-from neuro_evolution import TemplateEstimator
+from neuro_evolution import NEATEstimator
 from neuro_evolution import TemplateTransformer
 from neuro_evolution import TemplateClassifier
 
@@ -15,7 +15,7 @@ def data():
     return load_iris(return_X_y=True)
 
 def test_template_estimator(data):
-    est = TemplateEstimator()
+    est = NEATEstimator()
     assert est.demo_param == 'demo_param'
 
     est.fit(*data)
