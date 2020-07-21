@@ -9,7 +9,6 @@ from abc import ABCMeta, abstractmethod
 import subprocess
 import sys
 from sklearn.metrics import accuracy_score, r2_score
-from sklearn.utils.multiclass import unique_labels
 
 subprocess.check_call([ sys.executable, "-m", "pip", "install", "neat-python" ])
 import neat
@@ -99,7 +98,6 @@ class BaseNEAT(BaseEstimator, metaclass=ABCMeta):
         self.X_ = X
         self.y_ = y
         self.is_fitted_ = True
-        self.classes_ = unique_labels(y)
         self.winner_genome = self.p.run(self._fitness_function, self.number_of_generations)
 
         print(self.winner_genome)
@@ -310,7 +308,7 @@ class NEATRegressor(BaseNEAT, RegressorMixin):
                  enabled_default=1,
                  enabled_mutate_rate=0.01,
                  feed_forward='true',
-                 initial_connection='full',
+                 initial_connection='full_direct',
                  node_add_prob=0.2,
                  node_delete_prob=0.2,
                  num_hidden=0,
@@ -414,7 +412,7 @@ class NEATRegressor(BaseNEAT, RegressorMixin):
         predictions = np.empty(X.shape[ 0 ], )
         for i in range(0, X.shape[ 0 ]):
             output = net.activate(X[ i ])
-            predictions[ i ] = np.clip(output, min(self.y), max(self.y))
+            predictions[ i ] = output[0]
 
         return predictions
 
@@ -436,6 +434,10 @@ class NEATRegressor(BaseNEAT, RegressorMixin):
             predicted = np.empty(self.X_.shape[ 0 ], )
             for i in range(0, self.X_.shape[ 0 ]):
                 output = net.activate(self.X_[ i ])
-                predicted[ i ] = np.clip(output, min(self.y_), max(self.y_))
+                predicted[ i ] = output[0]
 
-            genome.fitness = r2_score(self.y_, predicted)
+            adjusted_r2_score = 1 - (1 - r2_score(self.y_, predicted)) * (len(self.y_) - 1) / (
+                        len(self.y_) - self.X_.shape[ 1 ] - 1)
+
+            genome.fitness = adjusted_r2_score
+
