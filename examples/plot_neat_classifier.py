@@ -12,7 +12,7 @@ from neuro_evolution import NEATClassifier
 X = [[0, 0], [1, 1]]
 y = [0, 1]
 clf = NEATClassifier(number_of_generations=1000, pop_size=150,
-                     compatibility_threshold=3.0, num_outputs=2, num_inputs=2)
+                     compatibility_threshold=3.0, num_hidden=2)
 clf.fit(X, y)
 
 rng = np.random.RandomState(0)
