@@ -21,7 +21,7 @@ URL = 'https://github.com/MarkoMlakar/sklearn-neuro-evolution'
 LICENSE = 'new BSD'
 DOWNLOAD_URL = 'https://github.com/MarkoMlakar/sklearn-neuro-evolution'
 VERSION = __version__
-INSTALL_REQUIRES = ['numpy', 'scipy', 'scikit-learn']
+INSTALL_REQUIRES = ['numpy', 'scipy', 'scikit-learn', 'neat-python', 'pandas']
 CLASSIFIERS = ['Intended Audience :: Science/Research',
                'Intended Audience :: Developers',
                'License :: OSI Approved',
