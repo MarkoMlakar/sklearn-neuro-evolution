@@ -131,7 +131,7 @@ class BaseNEAT(BaseEstimator, metaclass=ABCMeta):
                                       self.weight_mutate_power,
                                       self.weight_mutate_rate, self.weight_replace_rate,
                                       # TODO: Refactor this!!
-                                      0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+                                      0.0, 0.0, 0.0, 0.0)
 
         _reproduction_config = ReproductionConfig(self.elitism, self.survival_threshold)
         _species_config = SpeciesConfig(self.compatibility_threshold)
