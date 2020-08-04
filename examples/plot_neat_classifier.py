@@ -5,37 +5,39 @@ Plotting NEAT Classifier
 
 An example plot of :class:`neuro_evolution._neat.NEATClassifier`
 """
-import numpy as np
 from matplotlib import pyplot as plt
+from sklearn.datasets import make_classification
+from sklearn.metrics import classification_report
+from sklearn.model_selection import train_test_split
 from neuro_evolution import NEATClassifier
 
-X = [[0, 0], [1, 1]]
-y = [0, 1]
-clf = NEATClassifier(number_of_generations=1000, pop_size=150,
-                     compatibility_threshold=3.0, num_hidden=2)
-clf.fit(X, y)
+X, y = make_classification(n_features=2, n_redundant=0, n_informative=2,
+                           random_state=123, n_samples=200)
 
-rng = np.random.RandomState(0)
-X_test = rng.rand(1000, 2)
-y_pred = clf.predict(X_test)
+x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.25)
 
-X_0 = X_test[y_pred == 0]
-X_1 = X_test[y_pred == 1]
+clf = NEATClassifier(number_of_generations=150,
+                     fitness_threshold=0.90,
+                     pop_size=150)
 
+neat_genome = clf.fit(x_train, y_train)
+y_predicted = neat_genome.predict(x_test)
 
-p0 = plt.scatter(0, 0, c='red', s=150)
-p1 = plt.scatter(1, 1, c='blue', s=150)
+fig = plt.figure()
+ax = plt.axes(projection='3d')
 
-ax0 = plt.scatter(X_0[:, 0], X_0[:, 1], c='indianred', s=35)
-ax1 = plt.scatter(X_1[:, 0], X_1[:, 1], c='deepskyblue', s=35)
+# Data for three-dimensional scattered points
+train_z_data = y_train
+train_x_data = x_train[:, 1]
+train_y_data = x_train[:, 0]
+ax.scatter3D(train_x_data, train_y_data, train_z_data, c='Blue')
 
-leg = plt.legend([p0, p1, ax0, ax1],
-                 ['Point 0', 'Point 1', 'Class 0', 'Class 1'],
-                 loc='upper left', fancybox=True, scatterpoints=1)
-leg.get_frame().set_alpha(0.5)
-
-plt.xlabel('Feature 1')
-plt.ylabel('Feature 2')
-plt.xlim([-.5, 1.5])
-
+test_z_data = y_predicted
+test_x_data = x_test[:, 1]
+test_y_data = x_test[:, 0]
+ax.scatter3D(test_x_data, test_y_data, test_z_data, c='Red')
+ax.legend(['Actual', 'Predicted'])
 plt.show()
+
+print(classification_report(y_test, y_predicted))
+

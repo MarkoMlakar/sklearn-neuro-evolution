@@ -17,22 +17,17 @@
 .. |ReadTheDocs| image:: https://readthedocs.org/projects/neuro-evolution/badge/?version=latest
 .. _ReadTheDocs: https://neuro-evolution.readthedocs.io/en/latest/?badge=latest
 
-project-template - A template for scikit-learn contributions
+NeuroEvolution -> scikit-learn compatible NEAT & WANN
 ============================================================
 
 .. _scikit-learn: https://scikit-learn.org
 
-**project-template** is a template project for scikit-learn_ compatible
-extensions.
+NEAT is a method developed by Kenneth O. Stanley for evolving arbitrary neural networks. It's an established topology search algorithm notable for its ability to optimize the weights and structure of networks simultaneously
 
-It aids development of estimators that can be used in scikit-learn pipelines
-and (hyper)parameter search, while facilitating testing (including some API
-compliance), documentation, open source development, packaging, and continuous
-integration.
+.. _neuro-evolution: https://pypi.org/project/neuro-evolution/
+.. _neat-python: https://github.com/CodeReclaimers/neat-python
+.. _weight-agnostic-neural-networks: https://github.com/google/brain-tokyo-workshop/tree/master/WANNRelease
 
-.. _documentation: https://neuro-evolution.readthedocs.io/en/latest/quick_start.html
+neuro-evolution_ package is based on a pure python implementation of NEAT called neat-python_ with the addition
+of weight agnostic neural networks that are based on weight-agnostic-neural-networks_
 
-Refer to the documentation_ to modify the template for your own scikit-learn
-contribution.
-
-*Thank you for cleanly contributing to the scikit-learn ecosystem!*

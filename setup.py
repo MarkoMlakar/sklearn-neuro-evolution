@@ -12,14 +12,14 @@ with open(ver_file) as f:
     exec(f.read())
 
 DISTNAME = 'neuro-evolution'
-DESCRIPTION = 'A template for scikit-learn compatible packages.'
+DESCRIPTION = 'scikit-learn compatible package for neuro evolution.'
 with codecs.open('README.rst', encoding='utf-8-sig') as f:
     LONG_DESCRIPTION = f.read()
 MAINTAINER = 'M. Mlakar'
 MAINTAINER_EMAIL = 'markomlakar2@gmail.com'
 URL = 'https://github.com/MarkoMlakar/sklearn-neuro-evolution'
 LICENSE = 'new BSD'
-DOWNLOAD_URL = 'https://github.com/MarkoMlakar/sklearn-neuro-evolution'
+DOWNLOAD_URL = 'https://github.com/MarkoMlakar/sklearn-neuro-evolution/releases/tag/v1.0.0'
 VERSION = __version__
 INSTALL_REQUIRES = ['numpy', 'scipy', 'scikit-learn', 'neat-python', 'pandas']
 CLASSIFIERS = ['Intended Audience :: Science/Research',

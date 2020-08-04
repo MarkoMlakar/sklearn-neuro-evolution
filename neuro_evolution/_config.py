@@ -18,7 +18,8 @@ class GenomeConfig:
                  response_init_mean, response_init_stdev, response_max_value, response_min_value,
                  response_mutate_power, response_mutate_rate, response_replace_rate, weight_init_mean,
                  weight_init_stdev, weight_max_value, weight_min_value, weight_mutate_power,
-                 weight_mutate_rate, weight_replace_rate):
+                 weight_mutate_rate, weight_replace_rate, add_conn_roulette_prob, add_node_roulette_prob,
+                 mutate_conn_roulette_prob, mutate_act_roulette_prob):
 
         self.activation_default = activation_default
         self.activation_mutate_rate = activation_mutate_rate
@@ -60,6 +61,10 @@ class GenomeConfig:
         self.weight_mutate_power = weight_mutate_power
         self.weight_mutate_rate = weight_mutate_rate
         self.weight_replace_rate = weight_replace_rate
+        self.add_conn_roulette_prob = add_conn_roulette_prob
+        self.add_node_roulette_prob = add_node_roulette_prob
+        self.mutate_conn_roulette_prob = mutate_conn_roulette_prob
+        self.mutate_act_roulette_prob = mutate_act_roulette_prob
 
 
 class ReproductionConfig:

@@ -129,7 +129,9 @@ class BaseNEAT(BaseEstimator, metaclass=ABCMeta):
                                       self.weight_init_mean,
                                       self.weight_init_stdev, self.weight_max_value, self.weight_min_value,
                                       self.weight_mutate_power,
-                                      self.weight_mutate_rate, self.weight_replace_rate)
+                                      self.weight_mutate_rate, self.weight_replace_rate,
+                                      # TODO: Refactor this!!
+                                      0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 
         _reproduction_config = ReproductionConfig(self.elitism, self.survival_threshold)
         _species_config = SpeciesConfig(self.compatibility_threshold)
@@ -166,8 +168,7 @@ class BaseNEAT(BaseEstimator, metaclass=ABCMeta):
             self.config_ = self._set_neat_config(X.shape[1], 1)
 
         self.p_ = self._setup_neat()
-        pe_ = neat.ParallelEvaluator(multiprocessing.cpu_count(), self._fitness_function)
-        self.winner_genome_ = self.p_.run(pe_.evaluate, self.number_of_generations)
+        self.winner_genome_ = self.p_.run(self._fitness_function, self.number_of_generations)
 
         print(self.winner_genome_)
 
@@ -200,14 +201,14 @@ class NEATClassifier(BaseNEAT, ClassifierMixin):
 
     # TODO: Add model description
 
-    def __init__(self, number_of_generations=10,
+    def __init__(self, number_of_generations=100,
                  fitness_criterion='max',
                  fitness_threshold=0.95,
-                 pop_size=16,
+                 pop_size=150,
                  reset_on_extinction=0,
                  no_fitness_termination=0,
-                 activation_default='relu',
-                 activation_mutate_rate=0.50,
+                 activation_default='sigmoid',
+                 activation_mutate_rate=0.00,
                  activation_options='sigmoid relu tanh gauss inv hat clamped sin square abs exp identity',
                  aggregation_default='sum',
                  aggregation_mutate_rate=0.0,
@@ -224,7 +225,7 @@ class NEATClassifier(BaseNEAT, ClassifierMixin):
                  conn_add_prob=0.50,
                  conn_delete_prob=0.50,
                  enabled_default=1,
-                 enabled_mutate_rate=0.05,
+                 enabled_mutate_rate=0.01,
                  feed_forward='true',
                  initial_connection='full_direct',
                  node_add_prob=0.25,
@@ -340,7 +341,7 @@ class NEATClassifier(BaseNEAT, ClassifierMixin):
 
         return self.label_encoder_.inverse_transform(predictions)
 
-    def _fitness_function(self, genome, config):
+    def _fitness_function(self, genomes, config):
         """Evaluation function for calculating the fitness of genomes.
         Applies the softmax function for the classification output and calculates the accuracy score.
 
@@ -353,15 +354,20 @@ class NEATClassifier(BaseNEAT, ClassifierMixin):
         -------
         void : Assigns the fitness to each genome
         """
-        net = neat.nn.FeedForwardNetwork.create(genome, config)
-        predictions = np.empty(self.X_.shape[0])
-        for i in range(0, self.X_.shape[0]):
-            output = net.activate(self.X_[i])
-            softmax_result = softmax(output)
-            class_output = np.argmax(((softmax_result / np.max(softmax_result)) == 1).astype(int))
-            predictions[i] = class_output
+        # TODO: Take care of binary classification!!
+        for genome_id, genome in genomes:
+            net = neat.nn.FeedForwardNetwork.create(genome, config)
+            predictions = np.empty(self.X_.shape[0])
+            for i in range(0, self.X_.shape[0]):
+                output = net.activate(self.X_[i])
+                softmax_result = softmax(output)
+                if len(softmax_result) > 1:
+                    class_output = np.argmax(((softmax_result / np.max(softmax_result)) == 1))
+                else:
+                    class_output = softmax_result[0]
+                predictions[i] = class_output
 
-        return accuracy_score(self.y_, predictions)
+            genome.fitness = accuracy_score(self.y_, predictions)
 
     def fit(self, X, y):
         """Fit the model to data matrix X and target(s) y.
@@ -391,18 +397,15 @@ class NEATClassifier(BaseNEAT, ClassifierMixin):
 class NEATRegressor(BaseNEAT, RegressorMixin):
     """NEAT regressor
     """
-
-    # TODO: Add model description
-
-    def __init__(self, number_of_generations=10,
+    def __init__(self, number_of_generations=100,
                  fitness_criterion='max',
-                 fitness_threshold=0.90,
-                 pop_size=16,
+                 fitness_threshold=0.95,
+                 pop_size=150,
                  reset_on_extinction=0,
                  no_fitness_termination=0,
                  activation_default='relu',
-                 activation_mutate_rate=0.50,
-                 activation_options='sigmoid tanh gauss sin relu',
+                 activation_mutate_rate=0.0,
+                 activation_options='sigmoid relu tanh gauss inv hat clamped sin square abs exp identity',
                  aggregation_default='sum',
                  aggregation_mutate_rate=0.0,
                  aggregation_options='sum',
@@ -415,14 +418,14 @@ class NEATRegressor(BaseNEAT, RegressorMixin):
                  bias_replace_rate=0.1,
                  compatibility_disjoint_coefficient=1.0,
                  compatibility_weight_coefficient=0.5,
-                 conn_add_prob=0.5,
-                 conn_delete_prob=0.5,
+                 conn_add_prob=0.50,
+                 conn_delete_prob=0.50,
                  enabled_default='true',
                  enabled_mutate_rate=0.01,
                  feed_forward='true',
-                 initial_connection='full_direct',
-                 node_add_prob=0.2,
-                 node_delete_prob=0.2,
+                 initial_connection='full',
+                 node_add_prob=0.25,
+                 node_delete_prob=0.25,
                  num_hidden=0,
                  response_init_mean=1.0,
                  response_init_stdev=0.0,
@@ -441,8 +444,8 @@ class NEATRegressor(BaseNEAT, RegressorMixin):
                  compatibility_threshold=3.0,
                  species_fitness_func='max',
                  max_stagnation=20,
-                 species_elitism=2,
-                 elitism=5,
+                 species_elitism=1,
+                 elitism=2,
                  survival_threshold=0.2,
                  statistic_reporter=1,
                  create_checkpoints=0,
@@ -524,7 +527,7 @@ class NEATRegressor(BaseNEAT, RegressorMixin):
 
         return predictions
 
-    def _fitness_function(self, genome, config):
+    def _fitness_function(self, genomes, config):
         """Evaluation function for calculating the fitness of genomes. Calculates the r2_score
 
         Parameters
@@ -536,13 +539,13 @@ class NEATRegressor(BaseNEAT, RegressorMixin):
         -------
         void : Assigns the fitness to each genome
         """
-        net = neat.nn.FeedForwardNetwork.create(genome, config)
-        predictions = np.empty(self.y_.shape[0])
-        for i in range(0, self.y_.shape[0]):
-            output = net.activate(self.X_[i])
-            predictions[i] = output[0]
-
-        return r2_score(self.y_, predictions)
+        for genome_id, genome in genomes:
+            net = neat.nn.FeedForwardNetwork.create(genome, config)
+            predictions = np.empty(self.y_.shape[0])
+            for i in range(0, self.y_.shape[0]):
+                output = net.activate(self.X_[i])
+                predictions[i] = output[0]
+            genome.fitness = r2_score(self.y_, predictions)
 
     def _validate_input(self, X, y):
         X, y = check_X_y(X, y)
