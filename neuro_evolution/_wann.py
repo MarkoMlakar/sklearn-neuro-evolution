@@ -342,13 +342,16 @@ class WANNClassifier(BaseNEAT, ClassifierMixin):
         if self.single_shared_weights is None:
             self.single_shared_weights = [ -2.0, -1.0, -0.5, 0.5, 1.0, 2.0 ]
 
-    def predict(self, X):
+    def predict(self, X, single_weight=None):
         """Predict using the NEAT classifier
 
         Parameters
         ----------
         X : {array-like, sparse matrix} of shape (n_samples, n_features)
             The input data.
+
+        single_weight: float
+            Single shared weight value
 
         Returns
         -------
@@ -361,6 +364,11 @@ class WANNClassifier(BaseNEAT, ClassifierMixin):
         # Note: We raise the ValueError for the scikit-learn unit tests to pass!
         if X.shape[ 1 ] is not self.config_.genome_config.num_inputs:
             raise ValueError
+
+        if single_weight is not None:
+            # Set the user defined single shared weight
+            for connection in self.winner_genome_.connections.values():
+                connection.weight = single_weight
 
         net = neat.nn.FeedForwardNetwork.create(self.winner_genome_, self.config_)
 
