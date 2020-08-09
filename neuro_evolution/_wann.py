@@ -45,7 +45,8 @@ class BaseNEAT(BaseEstimator, metaclass=ABCMeta):
                  weight_mutate_rate, weight_replace_rate, compatibility_threshold, species_fitness_func,
                  max_stagnation, species_elitism, elitism, survival_threshold, statistic_reporter,
                  create_checkpoints, checkpoint_frequency, add_conn_roulette_prob, add_node_roulette_prob,
-                 mutate_conn_roulette_prob, mutate_act_roulette_prob):
+                 mutate_conn_roulette_prob, mutate_act_roulette_prob, delete_conn_roulette_prob,
+                 delete_node_roulette_prob):
         self.single_shared_weights = single_shared_weights
         self.number_of_generations = number_of_generations
         self.fitness_criterion = fitness_criterion
@@ -106,6 +107,8 @@ class BaseNEAT(BaseEstimator, metaclass=ABCMeta):
         self.add_node_roulette_prob = add_node_roulette_prob
         self.mutate_conn_roulette_prob = mutate_conn_roulette_prob
         self.mutate_act_roulette_prob = mutate_act_roulette_prob
+        self.delete_conn_roulette_prob = delete_conn_roulette_prob
+        self.delete_node_roulette_prob = delete_node_roulette_prob
 
     @abstractmethod
     def _fitness_function(self, genomes, config):
@@ -139,7 +142,8 @@ class BaseNEAT(BaseEstimator, metaclass=ABCMeta):
                                       self.weight_mutate_power,
                                       self.weight_mutate_rate, self.weight_replace_rate, self.add_conn_roulette_prob,
                                       self.add_node_roulette_prob, self.mutate_conn_roulette_prob,
-                                      self.mutate_act_roulette_prob)
+                                      self.mutate_act_roulette_prob, self.delete_conn_roulette_prob,
+                                      self.delete_node_roulette_prob)
 
         _reproduction_config = ReproductionConfig(self.elitism, self.survival_threshold)
         _species_config = SpeciesConfig(self.compatibility_threshold)
@@ -155,8 +159,8 @@ class BaseNEAT(BaseEstimator, metaclass=ABCMeta):
 
         if self.statistic_reporter:
             p_.add_reporter(neat.StdOutReporter(self.statistic_reporter))
-            _stats = neat.StatisticsReporter()
-            p_.add_reporter(_stats)
+            self.stats_ = neat.StatisticsReporter()
+            p_.add_reporter(self.stats_)
             if self.create_checkpoints:
                 p_.add_reporter(neat.Checkpointer(self.checkpoint_frequency))
         return p_
@@ -280,7 +284,9 @@ class WANNClassifier(BaseNEAT, ClassifierMixin):
                  add_conn_roulette_prob=0.25,
                  add_node_roulette_prob=0.25,
                  mutate_conn_roulette_prob=0.05,
-                 mutate_act_roulette_prob=0.50):
+                 mutate_act_roulette_prob=0.50,
+                 delete_conn_roulette_prob=0.20,
+                 delete_node_roulette_prob=0.20):
         super().__init__(single_shared_weights=single_shared_weights,
                          number_of_generations=number_of_generations,
                          fitness_criterion=fitness_criterion,
@@ -338,7 +344,9 @@ class WANNClassifier(BaseNEAT, ClassifierMixin):
                          add_conn_roulette_prob=add_conn_roulette_prob,
                          add_node_roulette_prob=add_node_roulette_prob,
                          mutate_conn_roulette_prob=mutate_conn_roulette_prob,
-                         mutate_act_roulette_prob=mutate_act_roulette_prob)
+                         mutate_act_roulette_prob=mutate_act_roulette_prob,
+                         delete_conn_roulette_prob=delete_conn_roulette_prob,
+                         delete_node_roulette_prob=delete_node_roulette_prob)
         if self.single_shared_weights is None:
             self.single_shared_weights = [ -2.0, -1.0, -0.5, 0.5, 1.0, 2.0 ]
 
@@ -529,7 +537,9 @@ class WANNRegressor(BaseNEAT, RegressorMixin):
                  add_conn_roulette_prob=0.50,
                  add_node_roulette_prob=0.50,
                  mutate_conn_roulette_prob=0.05,
-                 mutate_act_roulette_prob=0.50):
+                 mutate_act_roulette_prob=0.50,
+                 delete_conn_roulette_prob=0.20,
+                 delete_node_roulette_prob=0.20):
         super().__init__(single_shared_weights=single_shared_weights,
                          number_of_generations=number_of_generations,
                          fitness_criterion=fitness_criterion,
@@ -587,7 +597,9 @@ class WANNRegressor(BaseNEAT, RegressorMixin):
                          add_conn_roulette_prob=add_conn_roulette_prob,
                          add_node_roulette_prob=add_node_roulette_prob,
                          mutate_conn_roulette_prob=mutate_conn_roulette_prob,
-                         mutate_act_roulette_prob=mutate_act_roulette_prob)
+                         mutate_act_roulette_prob=mutate_act_roulette_prob,
+                         delete_conn_roulette_prob=delete_conn_roulette_prob,
+                         delete_node_roulette_prob=delete_node_roulette_prob)
         if self.single_shared_weights is None:
             self.single_shared_weights = [ -2.0, -1.0, -0.5, 0.5, 1.0, 2.0 ]
 

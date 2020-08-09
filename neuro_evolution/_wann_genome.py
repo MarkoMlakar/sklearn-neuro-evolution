@@ -39,7 +39,9 @@ class WannGenomeConfig(object):
                          ConfigParameter('add_conn_roulette_prob', float),
                          ConfigParameter('add_node_roulette_prob', float),
                          ConfigParameter('mutate_conn_roulette_prob', float),
-                         ConfigParameter('mutate_act_roulette_prob', float)]
+                         ConfigParameter('mutate_act_roulette_prob', float),
+                         ConfigParameter('delete_conn_roulette_prob', float),
+                         ConfigParameter('delete_node_roulette_prob', float)]
 
         # Gather configuration data from the gene classes.
         self.node_gene_type = params[ 'node_gene_type' ]
@@ -177,7 +179,8 @@ class WannGenome(neat.DefaultGenome):
         """ Mutates this genome. """
         topology_roulette = np.array(
             (config.add_conn_roulette_prob, config.add_node_roulette_prob,
-             config.mutate_conn_roulette_prob, config.mutate_act_roulette_prob))
+             config.mutate_conn_roulette_prob, config.mutate_act_roulette_prob, config.delete_conn_roulette_prob,
+             config.delete_node_roulette_prob))
 
         spin = np.random.rand() * np.sum(topology_roulette)
         slot = topology_roulette[ 0 ]
@@ -206,3 +209,11 @@ class WannGenome(neat.DefaultGenome):
         elif choice is 4:
             if len(self.nodes) > 0:
                 random.choice(list(self.nodes.values())).mutate(config)
+
+        # Delete connection
+        elif choice is 5:
+            self.mutate_delete_connection()
+
+        # Delete node
+        elif choice is 6:
+            self.mutate_delete_node(config)
