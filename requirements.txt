@@ -6,3 +6,4 @@ matplotlib~=3.3.0
 pandas~=1.0.5
 setuptools~=49.2.0
 neat-python~=0.92
+graphviz~=0.13.2
