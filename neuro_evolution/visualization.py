@@ -3,6 +3,7 @@ import graphviz
 import matplotlib.pyplot as plt
 import warnings
 import numpy as np
+from ._wann_genome import WannGenome
 
 def plot_stats(statistics, ylog=False, view=False, title='', xlabel='', ylabel='', filename='stats_fitness.svg'):
     """ Plots the population's average and best fitness. """
@@ -12,12 +13,19 @@ def plot_stats(statistics, ylog=False, view=False, title='', xlabel='', ylabel='
 
     generation = range(len(statistics.most_fit_genomes))
     best_fitness = [c.fitness for c in statistics.most_fit_genomes]
-    max_fitness = [c.fitMax for c in statistics.most_fit_genomes]
+    max_fitness = []
+    is_wann = False
+    for c in statistics.most_fit_genomes:
+        if isinstance(c, WannGenome):
+            max_fitness.append(c.fitMax)
+            is_wann = True
     avg_fitness = np.array(statistics.get_fitness_mean())
     stdev_fitness = np.array(statistics.get_fitness_stdev())
-
-    plt.plot(generation, max_fitness, 'r-', label="max - best single shared weight")
-    plt.plot(generation, best_fitness, 'orange', label="mean - over all weight values")
+    if is_wann:
+        plt.plot(generation, max_fitness, 'r-', label="max - best single shared weight")
+        plt.plot(generation, best_fitness, 'orange', label="mean - over all weight values")
+    else:
+        plt.plot(generation, best_fitness, 'orange', label="best")
     plt.plot(generation, avg_fitness, 'b-', label="average")
     plt.plot(generation, avg_fitness - stdev_fitness, 'g-.', label="-1 sd")
     plt.plot(generation, avg_fitness + stdev_fitness, 'g-.', label="+1 sd")

@@ -131,7 +131,7 @@ class BaseNEAT(BaseEstimator, metaclass=ABCMeta):
                                       self.weight_mutate_power,
                                       self.weight_mutate_rate, self.weight_replace_rate,
                                       # TODO: Refactor this!!
-                                      0.0, 0.0, 0.0, 0.0)
+                                      0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 
         _reproduction_config = ReproductionConfig(self.elitism, self.survival_threshold)
         _species_config = SpeciesConfig(self.compatibility_threshold)
@@ -147,8 +147,8 @@ class BaseNEAT(BaseEstimator, metaclass=ABCMeta):
 
         if self.statistic_reporter:
             p_.add_reporter(neat.StdOutReporter(self.statistic_reporter))
-            _stats = neat.StatisticsReporter()
-            p_.add_reporter(_stats)
+            self.stats_ = neat.StatisticsReporter()
+            p_.add_reporter(self.stats_)
             if self.create_checkpoints:
                 p_.add_reporter(neat.Checkpointer(self.checkpoint_frequency))
         return p_
