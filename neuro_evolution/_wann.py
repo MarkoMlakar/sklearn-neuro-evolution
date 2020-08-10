@@ -156,13 +156,12 @@ class BaseNEAT(BaseEstimator, metaclass=ABCMeta):
 
     def _setup_neat(self):
         p_ = neat.Population(self.config_)
-
+        self.stats_ = neat.StatisticsReporter()
+        p_.add_reporter(self.stats_)
+        if self.create_checkpoints:
+            p_.add_reporter(neat.Checkpointer(self.checkpoint_frequency))
         if self.statistic_reporter:
             p_.add_reporter(neat.StdOutReporter(self.statistic_reporter))
-            self.stats_ = neat.StatisticsReporter()
-            p_.add_reporter(self.stats_)
-            if self.create_checkpoints:
-                p_.add_reporter(neat.Checkpointer(self.checkpoint_frequency))
         return p_
 
     def _more_tags(self):
