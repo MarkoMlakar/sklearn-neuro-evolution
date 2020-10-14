@@ -11,7 +11,7 @@ ver_file = os.path.join('neuro_evolution', '_version.py')
 with open(ver_file) as f:
     exec(f.read())
 
-DISTNAME = 'neuro-evolution'
+DISTNAME = 'sklearn-neuro-evolution'
 DESCRIPTION = 'scikit-learn compatible package for neuro evolution.'
 with codecs.open('README.rst', encoding='utf-8-sig') as f:
     LONG_DESCRIPTION = f.read()
