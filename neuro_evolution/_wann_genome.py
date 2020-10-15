@@ -2,8 +2,7 @@ import neat
 from neat.activations import ActivationFunctionSet
 from neat.aggregations import AggregationFunctionSet
 from neat.config import ConfigParameter, write_pretty_params
-from neat.genes import DefaultNodeGene, DefaultConnectionGene
-from neat.genome import DefaultGenomeConfig
+from ._wann_genes import WannNodeGene, WannConnectionGene
 import numpy as np
 import random
 from itertools import count
@@ -35,13 +34,7 @@ class WannGenomeConfig(object):
                          ConfigParameter('node_delete_prob', float),
                          ConfigParameter('single_structural_mutation', bool, 'false'),
                          ConfigParameter('structural_mutation_surer', str, 'default'),
-                         ConfigParameter('initial_connection', str, 'unconnected'),
-                         ConfigParameter('add_conn_roulette_prob', float),
-                         ConfigParameter('add_node_roulette_prob', float),
-                         ConfigParameter('mutate_conn_roulette_prob', float),
-                         ConfigParameter('mutate_act_roulette_prob', float),
-                         ConfigParameter('delete_conn_roulette_prob', float),
-                         ConfigParameter('delete_node_roulette_prob', float)]
+                         ConfigParameter('initial_connection', str, 'unconnected')]
 
         # Gather configuration data from the gene classes.
         self.node_gene_type = params[ 'node_gene_type' ]
@@ -138,8 +131,8 @@ class WannGenome(neat.DefaultGenome):
 
     @classmethod
     def parse_config(cls, param_dict):
-        param_dict[ 'node_gene_type' ] = DefaultNodeGene
-        param_dict[ 'connection_gene_type' ] = DefaultConnectionGene
+        param_dict[ 'node_gene_type' ] = WannNodeGene
+        param_dict[ 'connection_gene_type' ] = WannConnectionGene
         return WannGenomeConfig(param_dict)
 
     def configure_crossover(self, genome1, genome2, config):
@@ -178,9 +171,8 @@ class WannGenome(neat.DefaultGenome):
     def mutate(self, config):
         """ Mutates this genome. """
         topology_roulette = np.array(
-            (config.add_conn_roulette_prob, config.add_node_roulette_prob,
-             config.mutate_conn_roulette_prob, config.mutate_act_roulette_prob, config.delete_conn_roulette_prob,
-             config.delete_node_roulette_prob))
+            (config.conn_add_prob, config.conn_add_prob, config.activation_mutate_rate,
+             config.conn_delete_prob,config.node_delete_prob, config.enabled_mutate_rate))
 
         spin = np.random.rand() * np.sum(topology_roulette)
         slot = topology_roulette[ 0 ]
@@ -200,20 +192,20 @@ class WannGenome(neat.DefaultGenome):
         elif choice is 2:
             self.mutate_add_node(config)
 
-        # Mutate Connection
-        elif choice is 3:
-            if len(self.connections) > 0:
-                random.choice(list(self.connections.values())).mutate(config)
-
         # Mutate Activation
-        elif choice is 4:
+        elif choice is 3:
             if len(self.nodes) > 0:
-                random.choice(list(self.nodes.values())).mutate(config)
+                random.choice(list(self.nodes.values())).mutate_activation(config)
 
         # Delete connection
-        elif choice is 5:
+        elif choice is 4:
             self.mutate_delete_connection()
 
         # Delete node
-        elif choice is 6:
+        elif choice is 5:
             self.mutate_delete_node(config)
+
+        # Mutate Connection
+        elif choice is 6:
+            if len(self.connections) > 0:
+                random.choice(list(self.connections.values())).mutate(config)

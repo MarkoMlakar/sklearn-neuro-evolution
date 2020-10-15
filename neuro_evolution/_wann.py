@@ -44,9 +44,7 @@ class BaseNEAT(BaseEstimator, metaclass=ABCMeta):
                  weight_init_stdev, weight_max_value, weight_min_value, weight_mutate_power,
                  weight_mutate_rate, weight_replace_rate, compatibility_threshold, species_fitness_func,
                  max_stagnation, species_elitism, elitism, survival_threshold, statistic_reporter,
-                 create_checkpoints, checkpoint_frequency, add_conn_roulette_prob, add_node_roulette_prob,
-                 mutate_conn_roulette_prob, mutate_act_roulette_prob, delete_conn_roulette_prob,
-                 delete_node_roulette_prob):
+                 create_checkpoints, checkpoint_frequency):
         self.single_shared_weights = single_shared_weights
         self.number_of_generations = number_of_generations
         self.fitness_criterion = fitness_criterion
@@ -102,14 +100,6 @@ class BaseNEAT(BaseEstimator, metaclass=ABCMeta):
         self.create_checkpoints = create_checkpoints
         self.checkpoint_frequency = checkpoint_frequency
 
-        # Important settings for WANN roulette selection
-        self.add_conn_roulette_prob = add_conn_roulette_prob
-        self.add_node_roulette_prob = add_node_roulette_prob
-        self.mutate_conn_roulette_prob = mutate_conn_roulette_prob
-        self.mutate_act_roulette_prob = mutate_act_roulette_prob
-        self.delete_conn_roulette_prob = delete_conn_roulette_prob
-        self.delete_node_roulette_prob = delete_node_roulette_prob
-
     @abstractmethod
     def _fitness_function(self, genomes, config):
         pass
@@ -140,10 +130,7 @@ class BaseNEAT(BaseEstimator, metaclass=ABCMeta):
                                       self.weight_init_mean,
                                       self.weight_init_stdev, self.weight_max_value, self.weight_min_value,
                                       self.weight_mutate_power,
-                                      self.weight_mutate_rate, self.weight_replace_rate, self.add_conn_roulette_prob,
-                                      self.add_node_roulette_prob, self.mutate_conn_roulette_prob,
-                                      self.mutate_act_roulette_prob, self.delete_conn_roulette_prob,
-                                      self.delete_node_roulette_prob)
+                                      self.weight_mutate_rate, self.weight_replace_rate)
 
         _reproduction_config = ReproductionConfig(self.elitism, self.survival_threshold)
         _species_config = SpeciesConfig(self.compatibility_threshold)
@@ -234,7 +221,7 @@ class WANNClassifier(BaseNEAT, ClassifierMixin):
                  reset_on_extinction=0,
                  no_fitness_termination=0,
                  activation_default='sigmoid',
-                 activation_mutate_rate=1.0,
+                 activation_mutate_rate=0.5,
                  activation_options='sigmoid relu tanh gauss inv hat clamped sin square abs exp identity',
                  aggregation_default='sum',
                  aggregation_mutate_rate=0.0,
@@ -248,14 +235,14 @@ class WANNClassifier(BaseNEAT, ClassifierMixin):
                  bias_replace_rate=0.1,
                  compatibility_disjoint_coefficient=1.0,
                  compatibility_weight_coefficient=0.5,
-                 conn_add_prob=1.0,
-                 conn_delete_prob=1.0,
+                 conn_add_prob=0.2,
+                 conn_delete_prob=0.0,
                  enabled_default=1,
-                 enabled_mutate_rate=1.0,
+                 enabled_mutate_rate=0.05,
                  feed_forward='true',
                  initial_connection='full_direct',
-                 node_add_prob=1.0,
-                 node_delete_prob=1.0,
+                 node_add_prob=0.2,
+                 node_delete_prob=0.0,
                  num_hidden=0,
                  response_init_mean=1.0,
                  response_init_stdev=0.0,
@@ -279,13 +266,7 @@ class WANNClassifier(BaseNEAT, ClassifierMixin):
                  survival_threshold=0.2,
                  statistic_reporter=1,
                  create_checkpoints=0,
-                 checkpoint_frequency=20,
-                 add_conn_roulette_prob=0.25,
-                 add_node_roulette_prob=0.25,
-                 mutate_conn_roulette_prob=0.05,
-                 mutate_act_roulette_prob=0.50,
-                 delete_conn_roulette_prob=0.20,
-                 delete_node_roulette_prob=0.20):
+                 checkpoint_frequency=20):
         super().__init__(single_shared_weights=single_shared_weights,
                          number_of_generations=number_of_generations,
                          fitness_criterion=fitness_criterion,
@@ -339,13 +320,7 @@ class WANNClassifier(BaseNEAT, ClassifierMixin):
                          survival_threshold=survival_threshold,
                          statistic_reporter=statistic_reporter,
                          create_checkpoints=create_checkpoints,
-                         checkpoint_frequency=checkpoint_frequency,
-                         add_conn_roulette_prob=add_conn_roulette_prob,
-                         add_node_roulette_prob=add_node_roulette_prob,
-                         mutate_conn_roulette_prob=mutate_conn_roulette_prob,
-                         mutate_act_roulette_prob=mutate_act_roulette_prob,
-                         delete_conn_roulette_prob=delete_conn_roulette_prob,
-                         delete_node_roulette_prob=delete_node_roulette_prob)
+                         checkpoint_frequency=checkpoint_frequency)
         if self.single_shared_weights is None:
             self.single_shared_weights = [ -2.0, -1.0, -0.5, 0.5, 1.0, 2.0 ]
 
@@ -501,14 +476,14 @@ class WANNRegressor(BaseNEAT, RegressorMixin):
                  bias_replace_rate=0.1,
                  compatibility_disjoint_coefficient=1.0,
                  compatibility_weight_coefficient=0.5,
-                 conn_add_prob=0.50,
-                 conn_delete_prob=0.50,
+                 conn_add_prob=0.20,
+                 conn_delete_prob=0.0,
                  enabled_default=1,
                  enabled_mutate_rate=0.05,
                  feed_forward='true',
                  initial_connection='full_direct',
-                 node_add_prob=0.25,
-                 node_delete_prob=0.25,
+                 node_add_prob=0.20,
+                 node_delete_prob=0.0,
                  num_hidden=0,
                  response_init_mean=1.0,
                  response_init_stdev=0.0,
@@ -532,13 +507,7 @@ class WANNRegressor(BaseNEAT, RegressorMixin):
                  survival_threshold=0.2,
                  statistic_reporter=1,
                  create_checkpoints=0,
-                 checkpoint_frequency=20,
-                 add_conn_roulette_prob=0.50,
-                 add_node_roulette_prob=0.50,
-                 mutate_conn_roulette_prob=0.05,
-                 mutate_act_roulette_prob=0.50,
-                 delete_conn_roulette_prob=0.20,
-                 delete_node_roulette_prob=0.20):
+                 checkpoint_frequency=20):
         super().__init__(single_shared_weights=single_shared_weights,
                          number_of_generations=number_of_generations,
                          fitness_criterion=fitness_criterion,
@@ -592,13 +561,7 @@ class WANNRegressor(BaseNEAT, RegressorMixin):
                          survival_threshold=survival_threshold,
                          statistic_reporter=statistic_reporter,
                          create_checkpoints=create_checkpoints,
-                         checkpoint_frequency=checkpoint_frequency,
-                         add_conn_roulette_prob=add_conn_roulette_prob,
-                         add_node_roulette_prob=add_node_roulette_prob,
-                         mutate_conn_roulette_prob=mutate_conn_roulette_prob,
-                         mutate_act_roulette_prob=mutate_act_roulette_prob,
-                         delete_conn_roulette_prob=delete_conn_roulette_prob,
-                         delete_node_roulette_prob=delete_node_roulette_prob)
+                         checkpoint_frequency=checkpoint_frequency)
         if self.single_shared_weights is None:
             self.single_shared_weights = [ -2.0, -1.0, -0.5, 0.5, 1.0, 2.0 ]
 

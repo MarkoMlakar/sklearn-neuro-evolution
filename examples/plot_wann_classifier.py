@@ -14,7 +14,7 @@ from neuro_evolution import WANNClassifier
 X, y = make_classification(n_features=2, n_redundant=0, n_informative=2,
                            random_state=123, n_samples=200)
 
-x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.25)
+x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=123)
 
 clf = WANNClassifier(single_shared_weights=[-2.0, -1.0, -0.5, 0.5, 1.0, 2.0],
                      number_of_generations=150,

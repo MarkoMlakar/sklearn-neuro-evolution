@@ -129,9 +129,7 @@ class BaseNEAT(BaseEstimator, metaclass=ABCMeta):
                                       self.weight_init_mean,
                                       self.weight_init_stdev, self.weight_max_value, self.weight_min_value,
                                       self.weight_mutate_power,
-                                      self.weight_mutate_rate, self.weight_replace_rate,
-                                      # TODO: Refactor this!!
-                                      0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+                                      self.weight_mutate_rate, self.weight_replace_rate)
 
         _reproduction_config = ReproductionConfig(self.elitism, self.survival_threshold)
         _species_config = SpeciesConfig(self.compatibility_threshold)
@@ -221,14 +219,14 @@ class NEATClassifier(BaseNEAT, ClassifierMixin):
                  bias_replace_rate=0.1,
                  compatibility_disjoint_coefficient=1.0,
                  compatibility_weight_coefficient=0.5,
-                 conn_add_prob=0.50,
-                 conn_delete_prob=0.50,
+                 conn_add_prob=0.2,
+                 conn_delete_prob=0.0,
                  enabled_default=1,
                  enabled_mutate_rate=0.01,
                  feed_forward='true',
                  initial_connection='full_direct',
-                 node_add_prob=0.25,
-                 node_delete_prob=0.25,
+                 node_add_prob=0.2,
+                 node_delete_prob=0.0,
                  num_hidden=0,
                  response_init_mean=1.0,
                  response_init_stdev=0.0,
@@ -416,14 +414,14 @@ class NEATRegressor(BaseNEAT, RegressorMixin):
                  bias_replace_rate=0.1,
                  compatibility_disjoint_coefficient=1.0,
                  compatibility_weight_coefficient=0.5,
-                 conn_add_prob=0.50,
-                 conn_delete_prob=0.50,
+                 conn_add_prob=0.2,
+                 conn_delete_prob=0.0,
                  enabled_default='true',
                  enabled_mutate_rate=0.01,
                  feed_forward='true',
                  initial_connection='full',
-                 node_add_prob=0.25,
-                 node_delete_prob=0.25,
+                 node_add_prob=0.2,
+                 node_delete_prob=0.0,
                  num_hidden=0,
                  response_init_mean=1.0,
                  response_init_stdev=0.0,
