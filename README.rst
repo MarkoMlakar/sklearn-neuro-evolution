@@ -43,14 +43,14 @@ sklearn-neuro-evolution_ package is based on a pure python implementation of NEA
 of weight agnostic neural networks that are based on weight-agnostic-neural-networks_. It is compatible to use in the
 Scikit-learn ecosystem
 
-Instalation
+Installation
 ============================================================
 
 .. code-block:: python
 
     pip install sklearn-neuro-evolution
 
-NEAT example
+NEAT Regression Example
 ============================================================
 
 .. code-block:: python
@@ -91,6 +91,9 @@ NEAT example
     print("R2 score: ", r2_score(y_test, neat_predictions))
     print("MSE", mean_squared_error(y_test, neat_predictions))
 
+
+NEAT Classification Example
+============================================================
 
 .. code-block:: python
 
@@ -138,7 +141,7 @@ NEAT example
     print(classification_report(y_test, y_predicted))
 
 
-WANN example
+WANN Regression Example
 ============================================================
 
 .. code-block:: python
@@ -183,7 +186,8 @@ WANN example
     print("R2 score: ", r2_score(y_test, wann_predictions))
     print("MSE", mean_squared_error(y_test, wann_predictions))
 
-
+WANN Classification Example
+============================================================
 .. code-block:: python
 
     """
